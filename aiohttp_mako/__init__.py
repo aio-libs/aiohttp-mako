@@ -3,6 +3,8 @@ import functools
 from mako.exceptions import TemplateLookupException
 from aiohttp import web
 from mako.lookup import TemplateLookup
+from functools import partial
+
 
 __version__ = '0.0.1'
 
@@ -67,3 +69,46 @@ def template(template_name, *, app_key=APP_KEY, encoding='utf-8', status=200):
             return response
         return wrapped
     return wrapper
+
+
+def render_mako(func):
+
+    @asyncio.coroutine
+    @functools.wraps(func)
+    def wrapped(*args):
+        if asyncio.iscoroutinefunction(func):
+            coro = func
+        else:
+            coro = asyncio.coroutine(func)
+        annotations = func.__annotations__
+        if not annotations.get('return'):
+            return (yield from coro)
+
+        render = annotations.get('return')
+
+        context = yield from coro(*args)
+        request = args[-1]
+
+        response = render(request, context)
+        return response
+    return wrapped
+
+
+def T(template_name):
+    return partial(render_template, template_name)
+
+@asyncio.coroutine
+def mako_middleware_factory(app, handler):
+
+    @asyncio.coroutine
+    def middleware(request):
+        annotations = handler.__annotations__
+        render = annotations.get('return', None)
+        if not render:
+            return (yield from handler(request))
+        context = yield from handler(request)
+        response = render(request, context)
+        return response
+
+    return middleware
+
