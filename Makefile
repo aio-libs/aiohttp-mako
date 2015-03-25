@@ -8,8 +8,8 @@ test:
 
 cov cover coverage:
 	nosetests -s --with-cover --cover-html --cover-branches \
-            --cover-html-dir ./coverage --cover-package=aiohttp_mako ./tests/
-	@echo "open file://`pwd`/coverage/index.html"
+            --cover-package=aiohttp_mako ./tests/
+	@echo "open file://`pwd`/cover/index.html"
 
 clean:
 	rm -rf `find . -name __pycache__`
