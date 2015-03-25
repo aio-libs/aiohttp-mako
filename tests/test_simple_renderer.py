@@ -1,10 +1,12 @@
 import asyncio
+import json
 import socket
 import unittest
 import aiohttp
 from aiohttp import web
 from aiohttp.multidict import CIMultiDict
 import aiohttp_mako
+from aiohttp_mako import T
 from unittest import mock
 
 
@@ -102,6 +104,90 @@ class TestSimple(unittest.TestCase):
             txt = yield from resp.text()
             self.assertEqual('<html><body><h1>HEAD</h1>text</body></html>',
                              txt)
+
+            srv.close()
+            self.addCleanup(srv.close)
+
+        self.loop.run_until_complete(go())
+
+    def test_func_annotation(self):
+
+        @aiohttp_mako.render_mako
+        @asyncio.coroutine
+        def func(request) -> T('index.html'):
+            return {'head': 'HEAD', 'text': 'text'}
+
+        @asyncio.coroutine
+        def go():
+            app = web.Application(loop=self.loop)
+            lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
+                                        output_encoding='utf-8',
+                                        default_filters=['decode.utf8'])
+            tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
+            lookup.put_string('index.html', tplt)
+
+
+            app.router.add_route('GET', '/', func)
+
+            port = self.find_unused_port()
+            srv = yield from self.loop.create_server(
+                app.make_handler(), '127.0.0.1', port)
+            url = "http://127.0.0.1:{}/".format(port)
+
+            resp = yield from aiohttp.request('GET', url, loop=self.loop)
+            self.assertEqual(200, resp.status)
+            txt = yield from resp.text()
+            self.assertEqual('<html><body><h1>HEAD</h1>text</body></html>',
+                             txt)
+
+            srv.close()
+            self.addCleanup(srv.close)
+
+        self.loop.run_until_complete(go())
+
+    def test_annotation_with_middleware(self):
+
+        # @asyncio.coroutine
+        def func(request) -> T('index.html'):
+            return {'head': 'HEAD', 'text': 'text'}
+
+        @asyncio.coroutine
+        def func_regular(request):
+            response = web.Response()
+            response.text = json.dumps({'status': 'ok'})
+            response.set_status(200)
+            return response
+
+        @asyncio.coroutine
+        def go():
+            m = [aiohttp_mako.mako_middleware_factory]
+            app = web.Application(loop=self.loop, middlewares=m)
+            lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
+                                        output_encoding='utf-8',
+                                        default_filters=['decode.utf8'])
+            tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
+            lookup.put_string('index.html', tplt)
+
+
+            app.router.add_route('GET', '/', func)
+            app.router.add_route('GET', '/json', func_regular)
+
+            port = self.find_unused_port()
+            srv = yield from self.loop.create_server(
+                app.make_handler(), '127.0.0.1', port)
+            url = "http://127.0.0.1:{}/".format(port)
+
+            resp = yield from aiohttp.request('GET', url, loop=self.loop)
+            self.assertEqual(200, resp.status)
+            txt = yield from resp.text()
+            self.assertEqual('<html><body><h1>HEAD</h1>text</body></html>',
+                             txt)
+
+            json_url = url + 'json'
+            resp = yield from aiohttp.request('GET', json_url, loop=self.loop)
+            self.assertEqual(200, resp.status)
+            json_msg = yield from resp.json()
+            self.assertEqual({'status': 'ok'}, json_msg)
 
             srv.close()
             self.addCleanup(srv.close)
