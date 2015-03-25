@@ -6,7 +6,7 @@ flake:
 test:
 	nosetests -s -v ./tests/
 
-cov cover coverage:
+cov cover coverage: flake
 	nosetests -s --with-cover --cover-html --cover-branches \
             --cover-package=aiohttp_mako ./tests/
 	@echo "open file://`pwd`/cover/index.html"

@@ -1,5 +1,8 @@
 aiohttp_mako
 ============
+.. image:: https://travis-ci.org/jettify/aiohttp_mako.svg?branch=master
+    :target: https://travis-ci.org/jettify/aiohttp_mako
+
 
 mako_ template renderer for `aiohttp.web`_ based on aiohttp_jinja2_. Library
 supports almost same api and some my experiments with functions annotations.
