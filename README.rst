@@ -1,7 +1,7 @@
 aiohttp_mako
 ============
 
-mako_ template renderer for `aiohttp.web`__ based on aiohttp_jinja2. Library
+mako_ template renderer for `aiohttp.web`_ based on aiohttp_jinja2_. Library
 supports almost same api and some my experiments with functions annotations.
 
 
@@ -25,7 +25,7 @@ There are several possible ways of usage:
     def handler(request):
         return {'greeting': 'Hello world!', 'title': 'mako example'}
 
-or using python 3 annotations and decorator::
+or using python 3 annotations and decorator:
 
 .. code:: python
 
@@ -33,7 +33,7 @@ or using python 3 annotations and decorator::
     def handler(request) -> T('index.html'):
         return {'greeting': 'Hello world!', 'title': 'mako example'}
 
-It is possible to get rid off `@aiohttp_mako.render_mako` decorator, but you
+It is possible to get rid off ``@aiohttp_mako.render_mako`` decorator, but you
 have to add middleware and this middleware must be first in processing
 chain:
 
@@ -85,7 +85,7 @@ Example
         print(txt)
 
     loop = asyncio.get_event_loop()
-loop.run_until_complete(go())
+    loop.run_until_complete(go())
 
 
 License
