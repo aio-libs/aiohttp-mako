@@ -54,7 +54,6 @@ class TestSimple(unittest.TestCase):
             tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
             lookup.put_string('tplt.html', tplt)
 
-
             app.router.add_route('GET', '/', func)
 
             port = self.find_unused_port()
@@ -126,7 +125,6 @@ class TestSimple(unittest.TestCase):
             tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
             lookup.put_string('index.html', tplt)
 
-
             app.router.add_route('GET', '/', func)
 
             port = self.find_unused_port()
@@ -167,7 +165,6 @@ class TestSimple(unittest.TestCase):
                                         default_filters=['decode.utf8'])
             tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
             lookup.put_string('index.html', tplt)
-
 
             app.router.add_route('GET', '/', func)
             app.router.add_route('GET', '/json', func_regular)

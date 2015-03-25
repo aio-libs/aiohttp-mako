@@ -97,6 +97,7 @@ def render_mako(func):
 def T(template_name):
     return partial(render_template, template_name)
 
+
 @asyncio.coroutine
 def mako_middleware_factory(app, handler):
 
@@ -111,4 +112,3 @@ def mako_middleware_factory(app, handler):
         return response
 
     return middleware
-
