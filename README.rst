@@ -29,7 +29,8 @@ There are several possible ways of usage:
     def handler(request):
         return {'greeting': 'Hello world!', 'title': 'mako example'}
 
-or using python 3 annotations and decorator:
+or using python 3 annotations and decorator. This is experimental feature
+I just wanted to play with annotations, and will be removed I guess:
 
 .. code:: python
 
@@ -37,17 +38,13 @@ or using python 3 annotations and decorator:
     def handler(request) -> T('index.html'):
         return {'greeting': 'Hello world!', 'title': 'mako example'}
 
-It is possible to get rid off ``@aiohttp_mako.render_mako`` decorator, but you
-have to add middleware and this middleware must be first in processing
-chain:
+It is possible to pretty print python and template exceptions using
+mako's html_error_template_ function. You have to set ``DEBUG_TEMPLATE`` key
+in application:
 
 .. code:: python
-
-    middlewares = [aiohttp_mako.mako_middleware_factory]
-    app = web.Application(loop=self.loop, middlewares=middlewares)
-
-    def handler(request) -> T('index.html'):
-        return {'greeting': 'Hello world!', 'title': 'mako example'}
+    app = web.Application(loop=loop)
+    app['DEBUG_TEMPLATE'] = True
 
 Example
 -------
@@ -55,41 +52,48 @@ Example
 .. code:: python
 
     import asyncio
-    import aiohttp
-
     import aiohttp_mako
-
     from aiohttp import web
-    from aiohttp_mako import render_mako, T
 
-    @render_mako
-    @asyncio.coroutine
-    def func(request) -> T('index.html'):
-        return {'head': 'HEAD', 'text': 'text'}
+
+    @aiohttp_mako.template('index.html')
+    def func(request):
+        return {'head': 'aiohttp_mako', 'text': 'Hello World!'}
+
+
+    @aiohttp_mako.template('index.html')
+    def bug_in_template(request):
+        # text key missing intentionally
+        return {'head': 'aiohttp_mako'}
+
 
     @asyncio.coroutine
-    def go():
+    def init(loop):
         app = web.Application(loop=loop)
         lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
                                     output_encoding='utf-8',
                                     default_filters=['decode.utf8'])
+        template = """<html><body><h1>${head}</h1>${text}</body></html>"""
+        template_bug = """<html><body><h1>${head}</h1>${text}</body></html>"""
 
-        template = "<html><body><h1>${head}</h1>${text}</body></html>"
         lookup.put_string('index.html', template)
+        lookup.put_string('bug.html', template_bug)
+
         app.router.add_route('GET', '/', func)
+        app.router.add_route('GET', '/bug', bug_in_template)
+        app['DEBUG_TEMPLATE'] = True
 
-
-        port = 8080
-        srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', port)
-        url = "http://127.0.0.1:{}/".format(port)
-
-        resp = yield from aiohttp.request('GET', url, loop=loop)
-        assert 200, resp.status
-        txt = yield from resp.text()
-        print(txt)
+        handler = app.make_handler()
+        srv = yield from loop.create_server(handler, '127.0.0.1', 8080)
+        print("Server started at http://127.0.0.1:8080")
+        return srv, handler
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(go())
+    srv, handler = loop.run_until_complete(init(loop))
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        loop.run_until_complete(handler.finish_connections())
 
 
 License
@@ -101,3 +105,4 @@ License
 .. _mako: http://www.makotemplates.org/
 .. _aiohttp_jinja2: https://github.com/aio-libs/aiohttp_jinja2
 .. _aiohttp_web: http://aiohttp.readthedocs.org/en/latest/web.html
+.. _html_error_template: http://docs.makotemplates.org/en/latest/usage.html#mako.exceptions.html_error_template
