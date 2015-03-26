@@ -35,7 +35,7 @@ def _render_template(template_name, request, response, context, *,
         template = lookup.get_template(template_name)
         body = template.render(**context)
     except:
-        if request.app.get('TEMPLATE_DEBUG'):
+        if request.app.get('DEBUG_TEMPLATE'):
             error_body = html_error_template().render()
             raise web.HTTPInternalServerError(body=error_body)
         raise
