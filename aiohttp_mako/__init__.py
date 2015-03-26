@@ -1,6 +1,6 @@
 import asyncio
 import functools
-from mako.exceptions import TemplateLookupException
+from mako.exceptions import html_error_template
 from aiohttp import web
 from mako.lookup import TemplateLookup
 from functools import partial
@@ -33,10 +33,12 @@ def _render_template(template_name, request, response, context, *,
                   "".format(app_key)))
     try:
         template = lookup.get_template(template_name)
-    except TemplateLookupException:
-        raise web.HTTPInternalServerError(
-            text="Template {} not found".format(template_name))
-    body = template.render(**context)
+        body = template.render(**context)
+    except:
+        if request.app.get('TEMPLATE_DEBUG'):
+            error_body = html_error_template().render()
+            raise web.HTTPInternalServerError(body=error_body)
+        raise
     response.content_type = 'text/html'
     response.charset = encoding
     response.body = body
