@@ -98,19 +98,3 @@ def render_mako(func):
 
 def T(template_name):
     return partial(render_template, template_name)
-
-
-@asyncio.coroutine
-def mako_middleware_factory(app, handler):
-
-    @asyncio.coroutine
-    def middleware(request):
-        annotations = handler.__annotations__
-        render = annotations.get('return', None)
-        if not render:
-            return (yield from handler(request))
-        context = yield from handler(request)
-        response = render(request, context)
-        return response
-
-    return middleware
