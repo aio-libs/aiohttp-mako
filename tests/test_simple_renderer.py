@@ -141,3 +141,38 @@ class TestSimple(unittest.TestCase):
             self.addCleanup(srv.close)
 
         self.loop.run_until_complete(go())
+
+    def test_render_template(self):
+
+        @asyncio.coroutine
+        def func(request):
+            return aiohttp_mako.render_template('tplt.html', request,
+                                                {'head': 'HEAD',
+                                                 'text': 'text'})
+
+        @asyncio.coroutine
+        def go():
+            app = web.Application(loop=self.loop)
+            lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
+                                        output_encoding='utf-8',
+                                        default_filters=['decode.utf8'])
+            tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
+            lookup.put_string('tplt.html', tplt)
+
+            app.router.add_route('GET', '/', func)
+
+            port = self.find_unused_port()
+            srv = yield from self.loop.create_server(
+                app.make_handler(), '127.0.0.1', port)
+            url = "http://127.0.0.1:{}/".format(port)
+
+            resp = yield from aiohttp.request('GET', url, loop=self.loop)
+            self.assertEqual(200, resp.status)
+            txt = yield from resp.text()
+            self.assertEqual('<html><body><h1>HEAD</h1>text</body></html>',
+                             txt)
+
+            srv.close()
+            self.addCleanup(srv.close)
+
+        self.loop.run_until_complete(go())
