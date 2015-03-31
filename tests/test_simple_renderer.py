@@ -113,7 +113,7 @@ class TestSimple(unittest.TestCase):
 
     def test_func_annotation(self):
 
-        @aiohttp_mako.render_mako
+        @aiohttp_mako.render_annotation
         @asyncio.coroutine
         def func(request) -> T('index.html'):
             return {'head': 'HEAD', 'text': 'text'}

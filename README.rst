@@ -34,7 +34,7 @@ I just wanted to play with annotations, and will be removed I guess:
 
 .. code:: python
 
-    @aiohttp_mako.render_mako
+    @aiohttp_mako.render_annotation
     def handler(request) -> T('index.html'):
         return {'greeting': 'Hello world!', 'title': 'mako example'}
 

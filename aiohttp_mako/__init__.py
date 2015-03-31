@@ -8,7 +8,8 @@ from functools import partial
 
 __version__ = '0.0.1'
 
-__all__ = ('setup', 'get_lookup', 'render_template', 'template')
+__all__ = ('setup', 'get_lookup', 'render_template', 'template',
+           'render_annotation')
 
 
 APP_KEY = 'aiohttp_mako_lookup'
@@ -73,7 +74,7 @@ def template(template_name, *, app_key=APP_KEY, encoding='utf-8', status=200):
     return wrapper
 
 
-def render_mako(func):
+def render_annotation(func):
 
     @asyncio.coroutine
     @functools.wraps(func)
