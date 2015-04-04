@@ -3,7 +3,7 @@
 flake:
 	flake8 aiohttp_mako tests
 
-test:
+test: flake
 	nosetests -s -v ./tests/
 
 cov cover coverage: flake
