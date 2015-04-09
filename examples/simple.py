@@ -8,12 +8,6 @@ def func(request):
     return {'head': 'aiohttp_mako', 'text': 'Hello World!'}
 
 
-@aiohttp_mako.template('index.html')
-def bug_in_template(request):
-    # text key missing intentionally to show rich traceback from mako
-    return {'head': 'aiohttp_mako'}
-
-
 @asyncio.coroutine
 def init(loop):
     app = web.Application(loop=loop)
@@ -27,8 +21,6 @@ def init(loop):
     lookup.put_string('bug.html', template_bug)
 
     app.router.add_route('GET', '/', func)
-    app.router.add_route('GET', '/bug', bug_in_template)
-    app['DEBUG_TEMPLATE'] = True
 
     handler = app.make_handler()
     srv = yield from loop.create_server(handler, '127.0.0.1', 8080)

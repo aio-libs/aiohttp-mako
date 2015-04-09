@@ -9,7 +9,6 @@ from aiohttp.multidict import CIMultiDict
 from mako.lookup import TemplateLookup
 
 import aiohttp_mako
-from aiohttp_mako import T
 
 
 class TestSimple(unittest.TestCase):
@@ -111,40 +110,6 @@ class TestSimple(unittest.TestCase):
 
         self.loop.run_until_complete(go())
 
-    def test_func_annotation(self):
-
-        @aiohttp_mako.render_annotation
-        @asyncio.coroutine
-        def func(request) -> T('index.html'):
-            return {'head': 'HEAD', 'text': 'text'}
-
-        @asyncio.coroutine
-        def go():
-            app = web.Application(loop=self.loop)
-            lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
-                                        output_encoding='utf-8',
-                                        default_filters=['decode.utf8'])
-            tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
-            lookup.put_string('index.html', tplt)
-
-            app.router.add_route('GET', '/', func)
-
-            port = self.find_unused_port()
-            srv = yield from self.loop.create_server(
-                app.make_handler(), '127.0.0.1', port)
-            url = "http://127.0.0.1:{}/".format(port)
-
-            resp = yield from aiohttp.request('GET', url, loop=self.loop)
-            self.assertEqual(200, resp.status)
-            txt = yield from resp.text()
-            self.assertEqual('<html><body><h1>HEAD</h1>text</body></html>',
-                             txt)
-
-            srv.close()
-            self.addCleanup(srv.close)
-
-        self.loop.run_until_complete(go())
-
     def test_render_template(self):
 
         @asyncio.coroutine
@@ -193,7 +158,7 @@ class TestSimple(unittest.TestCase):
                                         output_encoding='utf-8',
                                         default_filters=['decode.utf8'])
             tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
-            lookup.put_string('tplt.html', tplt)
+            lookup.put_string('tmpl.html', tplt)
 
             app.router.add_route('GET', '/', func)
 
@@ -210,6 +175,8 @@ class TestSimple(unittest.TestCase):
 
             srv.close()
             self.addCleanup(srv.close)
+
+        self.loop.run_until_complete(go())
 
     def test_render_not_initialized(self):
 
@@ -235,37 +202,57 @@ class TestSimple(unittest.TestCase):
 
         self.loop.run_until_complete(go())
 
-    def test_func_with_rich_tb(self):
+    def test_template_not_found(self):
 
-        @aiohttp_mako.template('tplt.html')
         @asyncio.coroutine
         def func(request):
-            return {'head': 'HEAD'}
+            return aiohttp_mako.render_template('template', request, {})
 
         @asyncio.coroutine
         def go():
             app = web.Application(loop=self.loop)
-            app['DEBUG_TEMPLATE'] = True
-            lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
-                                        output_encoding='utf-8',
-                                        default_filters=['decode.utf8'])
-            tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
-            lookup.put_string('tplt.html', tplt)
+            aiohttp_mako.setup(app, input_encoding='utf-8',
+                               output_encoding='utf-8',
+                               default_filters=['decode.utf8'])
 
             app.router.add_route('GET', '/', func)
 
-            port = self.find_unused_port()
-            srv = yield from self.loop.create_server(
-                app.make_handler(), '127.0.0.1', port)
-            url = "http://127.0.0.1:{}/".format(port)
+            req = self.make_request(app, 'GET', '/')
 
-            resp = yield from aiohttp.request('GET', url, loop=self.loop)
-            self.assertEqual(500, resp.status)
-            txt = yield from resp.text()
-            self.assertTrue('<title>Mako Runtime Error</title>' in txt)
+            with self.assertRaises(web.HTTPInternalServerError) as ctx:
+                yield from func(req)
 
-            srv.close()
-            self.addCleanup(srv.close)
+            self.assertEqual("Template 'template' not found",
+                             ctx.exception.text)
+
+        self.loop.run_until_complete(go())
+
+    def test_template_not_mapping(self):
+
+        @aiohttp_mako.template('tmpl.html')
+        @asyncio.coroutine
+        def func(request):
+            return 'data'
+
+        @asyncio.coroutine
+        def go():
+            app = web.Application(loop=self.loop)
+            lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
+                                        output_encoding='utf-8',
+                                        default_filters=['decode.utf8'])
+
+            tplt = "<html><body><h1>${head}</h1>${text}</body></html>"
+            lookup.put_string('tmpl.html', tplt)
+
+            app.router.add_route('GET', '/', func)
+
+            req = self.make_request(app, 'GET', '/')
+
+            with self.assertRaises(web.HTTPInternalServerError) as ctx:
+                yield from func(req)
+
+            self.assertEqual("context should be mapping, not <class 'str'>",
+                             ctx.exception.text)
 
         self.loop.run_until_complete(go())
 
