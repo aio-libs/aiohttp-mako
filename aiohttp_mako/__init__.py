@@ -4,7 +4,8 @@ from collections import Mapping
 
 from aiohttp import web
 from mako.lookup import TemplateLookup
-from mako.exceptions import TemplateLookupException
+from mako.exceptions import TemplateLookupException, text_error_template
+import sys
 
 __version__ = '0.0.1'
 __all__ = ('setup', 'get_lookup', 'render_template', 'template',
@@ -39,7 +40,19 @@ def render_string(template_name, request, context, *, app_key):
     if not isinstance(context, Mapping):
         raise web.HTTPInternalServerError(
             text="context should be mapping, not {}".format(type(context)))
-    text = template.render_unicode(**context)
+    try:
+        text = template.render_unicode(**context)
+    except Exception:  # pragma: no cover
+        try:
+            exc_info = sys.exc_info()
+            errtext = text_error_template().render(
+                error=exc_info[1],
+                traceback=exc_info[2])
+            exc = MakoRenderingException(errtext).with_traceback(exc_info[2])
+            raise exc
+        finally:
+            del exc_info
+
     return text
 
 
@@ -71,3 +84,7 @@ def template(template_name, *, app_key=APP_KEY, encoding='utf-8', status=200):
             return response
         return wrapped
     return wrapper
+
+
+class MakoRenderingException(Exception):
+    """Mako rendering exceptions with error """
