@@ -63,4 +63,4 @@ License
 .. _aiohttp_jinja2: https://github.com/aio-libs/aiohttp_jinja2
 .. _aiohttp_web: http://aiohttp.readthedocs.org/en/latest/web.html
 .. _html_error_template: http://docs.makotemplates.org/en/latest/usage.html#mako.exceptions.html_error_template
-.. _aiohttp_debugtoolbar: https://github.com/jettify/aiohttp_debugtoolbar
+.. _aiohttp_debugtoolbar: https://github.com/aio-libs/aiohttp_debugtoolbar
