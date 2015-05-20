@@ -43,15 +43,12 @@ def render_string(template_name, request, context, *, app_key):
     try:
         text = template.render_unicode(**context)
     except Exception:  # pragma: no cover
-        try:
-            exc_info = sys.exc_info()
-            errtext = text_error_template().render(
-                error=exc_info[1],
-                traceback=exc_info[2])
-            exc = MakoRenderingException(errtext).with_traceback(exc_info[2])
-            raise exc
-        finally:
-            del exc_info
+        exc_info = sys.exc_info()
+        errtext = text_error_template().render(
+            error=exc_info[1],
+            traceback=exc_info[2])
+        exc = MakoRenderingException(errtext).with_traceback(exc_info[2])
+        raise exc
 
     return text
 
