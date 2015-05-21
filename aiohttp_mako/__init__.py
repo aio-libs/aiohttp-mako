@@ -34,9 +34,9 @@ def render_string(template_name, request, context, *, app_key):
                   "".format(app_key)))
     try:
         template = lookup.get_template(template_name)
-    except TemplateLookupException:
+    except TemplateLookupException as e:
         raise web.HTTPInternalServerError(
-            text="Template '{}' not found".format(template_name))
+            text="Template '{}' not found".format(template_name)) from e
     if not isinstance(context, Mapping):
         raise web.HTTPInternalServerError(
             text="context should be mapping, not {}".format(type(context)))
