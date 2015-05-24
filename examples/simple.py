@@ -15,17 +15,14 @@ def init(loop):
                                 output_encoding='utf-8',
                                 default_filters=['decode.utf8'])
     template = """<html><body><h1>${head}</h1>${text}</body></html>"""
-    template_bug = """<html><body><h1>${head}</h1>${text}</body></html>"""
-
     lookup.put_string('index.html', template)
-    lookup.put_string('bug.html', template_bug)
-
     app.router.add_route('GET', '/', func)
 
     handler = app.make_handler()
     srv = yield from loop.create_server(handler, '127.0.0.1', 8080)
     print("Server started at http://127.0.0.1:8080")
     return srv, handler
+
 
 loop = asyncio.get_event_loop()
 srv, handler = loop.run_until_complete(init(loop))
