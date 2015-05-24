@@ -33,10 +33,7 @@ Example
                                     output_encoding='utf-8',
                                     default_filters=['decode.utf8'])
         template = """<html><body><h1>${head}</h1>${text}</body></html>"""
-        template_bug = """<html><body><h1>${head}</h1>${text}</body></html>"""
-
         lookup.put_string('index.html', template)
-        lookup.put_string('bug.html', template_bug)
 
         app.router.add_route('GET', '/', func)
 
