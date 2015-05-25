@@ -1,11 +1,11 @@
 import asyncio
 import functools
+import sys
 from collections import Mapping
 
 from aiohttp import web
 from mako.lookup import TemplateLookup
 from mako.exceptions import TemplateLookupException, text_error_template
-import sys
 
 __version__ = '0.0.1'
 __all__ = ('setup', 'get_lookup', 'render_template', 'template',
