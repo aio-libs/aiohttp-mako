@@ -1,4 +1,6 @@
 ipdb
-nose
 coverage
-flake8
+pytest
+pytest-cov
+pep8
+pyflakes

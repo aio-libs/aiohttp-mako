@@ -1,15 +1,18 @@
 # Some simple testing tasks (sorry, UNIX only).
 
 flake:
-	flake8 aiohttp_mako tests
+	pep8 aiohttp_mako tests
+	pyflakes aiohttp_mako tests
 
 test: flake
-	nosetests -s -v ./tests/
+	py.test -s -v ./tests/
+
+vtest:
+	py.test -s -v ./tests/
 
 cov cover coverage: flake
-	nosetests -s --with-cover --cover-html --cover-branches \
-            --cover-package=aiohttp_mako ./tests/
-	@echo "open file://`pwd`/cover/index.html"
+	py.test -s -v  --cov-report term --cov-report html --cov aiohttp_mako ./tests
+	@echo "open file://`pwd`/htmlcov/index.html"
 
 clean:
 	rm -rf `find . -name __pycache__`
