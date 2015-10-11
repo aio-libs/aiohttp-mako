@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+0.0.2 (XXXX-XX-XX)
+^^^^^^^^^^^^^^^^^^
+
+* Drop python 3.3 support
+* Add python 3.5 support
+* Move tests from nose to py.test
 
 0.0.1 (2015-05-08)
 ^^^^^^^^^^^^^^^^^^
