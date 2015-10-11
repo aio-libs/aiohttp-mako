@@ -6,12 +6,12 @@ aiohttp_mako
     :target: https://coveralls.io/r/aio-libs/aiohttp_mako
 
 mako_ template renderer for `aiohttp.web`__ based on aiohttp_jinja2_. Library
-supports almost same api. It is used in aiohttp_debugtoolbar_.
+has almost same api and support python 3.5 (PEP492_) syntax. It is used in aiohttp_debugtoolbar_.
 
 __ aiohttp_web_
 
 
-Example
+Example 
 -------
 
 .. code:: python
@@ -22,12 +22,10 @@ Example
 
 
     @aiohttp_mako.template('index.html')
-    def func(request):
+    async def func(request):
         return {'head': 'aiohttp_mako', 'text': 'Hello World!'}
 
-
-    @asyncio.coroutine
-    def init(loop):
+    async def init(loop):
         app = web.Application(loop=loop)
         lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
                                     output_encoding='utf-8',
@@ -38,7 +36,7 @@ Example
         app.router.add_route('GET', '/', func)
 
         handler = app.make_handler()
-        srv = yield from loop.create_server(handler, '127.0.0.1', 8080)
+        srv = await loop.create_server(handler, '127.0.0.1', 8080)
         print("Server started at http://127.0.0.1:8080")
         return srv, handler
 
@@ -61,3 +59,5 @@ License
 .. _aiohttp_web: http://aiohttp.readthedocs.org/en/latest/web.html
 .. _html_error_template: http://docs.makotemplates.org/en/latest/usage.html#mako.exceptions.html_error_template
 .. _aiohttp_debugtoolbar: https://github.com/aio-libs/aiohttp_debugtoolbar
+.. _PEP492: https://www.python.org/dev/peps/pep-0492/
+
