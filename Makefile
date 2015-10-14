@@ -1,7 +1,7 @@
 # Some simple testing tasks (sorry, UNIX only).
 
 flake:
-	pep8 aiohttp_mako tests/test_simple_renderer.py
+	pep8 aiohttp_mako tests
 	pyflakes aiohttp_mako tests/test_simple_renderer.py
 
 
