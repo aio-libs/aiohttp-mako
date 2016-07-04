@@ -1,10 +1,10 @@
 import asyncio
 import pytest
+from distutils.version import StrictVersion
 from unittest import mock
 
 import aiohttp
-from aiohttp import web
-from aiohttp.multidict import CIMultiDict
+from aiohttp import web, CIMultiDict
 from mako.lookup import TemplateLookup
 
 import aiohttp_mako
@@ -12,9 +12,14 @@ import aiohttp_mako
 
 def make_request(app, method, path):
     headers = CIMultiDict()
-    message = aiohttp.RawRequestMessage(method, path,
-                                        aiohttp.HttpVersion(1, 1),
-                                        headers, False, False)
+    if StrictVersion(aiohttp.__version__) < StrictVersion('0.20.0'):
+        message = aiohttp.RawRequestMessage(method, path,
+                                            aiohttp.HttpVersion(1, 1),
+                                            headers, False, False)
+    else:
+        message = aiohttp.RawRequestMessage(method, path,
+                                            aiohttp.HttpVersion(1, 1),
+                                            headers, headers, False, False)
     payload = mock.Mock()
     transport = mock.Mock()
     writer = mock.Mock()
