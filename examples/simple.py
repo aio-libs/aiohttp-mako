@@ -8,8 +8,7 @@ def func(request):
     return {'head': 'aiohttp_mako', 'text': 'Hello World!'}
 
 
-@asyncio.coroutine
-def init(loop):
+async def init(loop):
     app = web.Application(loop=loop)
     lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
                                 output_encoding='utf-8',
@@ -19,7 +18,7 @@ def init(loop):
     app.router.add_route('GET', '/', func)
 
     handler = app.make_handler()
-    srv = yield from loop.create_server(handler, '127.0.0.1', 8080)
+    srv = await loop.create_server(handler, '127.0.0.1', 8080)
     print("Server started at http://127.0.0.1:8080")
     return srv, handler
 
