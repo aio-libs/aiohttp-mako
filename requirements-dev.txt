@@ -1,4 +1,4 @@
-ipdb
+ipdb==0.10.1
 coverage
 pytest
 pytest-cov
