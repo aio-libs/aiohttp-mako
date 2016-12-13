@@ -94,10 +94,13 @@ def test_overwrite_primary_context(loop, test_client):
 def test_request_processor(loop, test_client):
 
     app = web.Application(loop=loop)
-    lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
-                                output_encoding='utf-8',
-                                default_filters=['decode.utf8'],
-                                context_processors=[aiohttp_mako.request_processor])
+    lookup = aiohttp_mako.setup(
+        app,
+        input_encoding='utf-8',
+        output_encoding='utf-8',
+        default_filters=['decode.utf8'],
+        context_processors=[aiohttp_mako.request_processor]
+    )
 
     tplt = "<html><body><h1>${head}</h1>path=${request.path}</body></html>"
     lookup.put_string('tplt.html', tplt)
