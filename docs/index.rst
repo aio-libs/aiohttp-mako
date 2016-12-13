@@ -57,6 +57,34 @@ you may call ``render_template`` function::
 .. _aiohttp_mako-reference:
 
 
+Context processors
+~~~~~~~~~~~~~~~~~~
+
+Context processors is a way to add some variables to each
+template context. It calculates variables on each request.
+
+Context processors is following last-win strategy.
+Therefore a context processor could rewrite variables delivered with
+previous one.
+
+In order to use context processors create required processors::
+
+    async def foo_processor(request):
+        return {'foo': 'bar'}
+
+And pass them into :func:`setup`::
+
+    aiohttp_mako.setup(
+        app,
+        context_processors=[foo_processor,
+                            aiohttp_mako.request_processor],
+        loader=loader)
+
+As you can see, there is a built-in :func:`request_processor`, which
+adds current :class:`aiohttp.web.Request` into context of templates
+under ``'request'`` name.
+
+
 Example
 -------
 ::
