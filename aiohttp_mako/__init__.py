@@ -7,7 +7,7 @@ from aiohttp import web
 from mako.lookup import TemplateLookup
 from mako.exceptions import TemplateLookupException, text_error_template
 
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 __all__ = ('setup', 'get_lookup', 'render_template', 'template',
            'render_string')
 
