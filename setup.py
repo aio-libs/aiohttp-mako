@@ -19,7 +19,7 @@ install_requires = ['aiohttp>=0.17', 'mako>=1.0.0']
 tests_require = install_requires + ['nose']
 
 
-setup(name='aiohttp_mako',
+setup(name='aiohttp-mako',
       version=version,
       description=("mako template renderer for aiohttp.web "
                    "(http server for asyncio)"),
@@ -34,7 +34,7 @@ setup(name='aiohttp_mako',
           'Topic :: Internet :: WWW/HTTP'],
       author='Nikolay Novik',
       author_email='nickolainovik@gmail.com',
-      url='https://github.com/aio-libs/aiohttp_mako/',
+      url='https://github.com/aio-libs/aiohttp-mako/',
       license='Apache 2',
       packages=find_packages(),
       install_requires=install_requires,
