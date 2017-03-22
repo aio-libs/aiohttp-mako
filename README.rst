@@ -1,9 +1,9 @@
 aiohttp_mako
 ============
-.. image:: https://travis-ci.org/aio-libs/aiohttp_mako.svg?branch=master
-    :target: https://travis-ci.org/aio-libs/aiohttp_mako
-.. image:: https://coveralls.io/repos/aio-libs/aiohttp_mako/badge.svg
-    :target: https://coveralls.io/r/aio-libs/aiohttp_mako
+.. image:: https://travis-ci.org/aio-libs/aiohttp-mako.svg?branch=master
+    :target: https://travis-ci.org/aio-libs/aiohttp-mako
+.. image:: https://coveralls.io/repos/aio-libs/aiohttp-mako/badge.svg
+    :target: https://coveralls.io/r/aio-libs/aiohttp-mako
 
 mako_ template renderer for `aiohttp.web`__ based on aiohttp_jinja2_. Library
 has almost same api and support python 3.5 (PEP492_) syntax. It is used in aiohttp_debugtoolbar_.
