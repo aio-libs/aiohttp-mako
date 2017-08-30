@@ -145,7 +145,7 @@ Reference
 
 .. function:: get_lookup(app, app_key=APP_KEY)
 
-   Get from `aiohttp` aplication instance :class:`mako.lookup.TemplateLookup`
+   Get from `aiohttp` application instance :class:`mako.lookup.TemplateLookup`
    object
 
    :param app: (:class:`aiohttp.web.Application` instance).
