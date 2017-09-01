@@ -4,7 +4,7 @@ from aiohttp import web
 
 
 @aiohttp_mako.template('index.html')
-def func(request):
+async def func(request):
     return {'head': 'aiohttp_mako', 'text': 'Hello World!'}
 
 
