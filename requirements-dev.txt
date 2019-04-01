@@ -1,7 +1,7 @@
 ipdb==0.12
 coverage==4.5.3
 pytest==4.4.0
-pytest-cov==2.6.0
+pytest-cov==2.6.1
 pep8==1.7.1
 pyflakes==2.0.0
 aiohttp==3.5.1
