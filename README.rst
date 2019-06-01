@@ -1,7 +1,7 @@
 aiohttp_mako
 ============
-.. image:: https://travis-ci.org/aio-libs/aiohttp-mako.svg?branch=master
-    :target: https://travis-ci.org/aio-libs/aiohttp-mako
+.. image:: https://travis-ci.com/aio-libs/aiohttp-mako.svg?branch=master
+    :target: https://travis-ci.com/aio-libs/aiohttp-mako
 .. image:: https://codecov.io/gh/aio-libs/aiohttp-mako/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/aio-libs/aiohttp-mako
 .. image:: https://img.shields.io/pypi/v/aiohttp-mako.svg
