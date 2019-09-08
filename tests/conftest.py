@@ -13,8 +13,8 @@ def pytest_ignore_collect(path, config):
 
 
 @pytest.fixture
-def app(loop):
-    app = web.Application(loop=loop)
+def app():
+    app = web.Application()
     lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
                                 output_encoding='utf-8',
                                 default_filters=['decode.utf8'])

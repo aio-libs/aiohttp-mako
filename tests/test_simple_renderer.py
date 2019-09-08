@@ -9,7 +9,7 @@ import aiohttp_mako
 
 
 @asyncio.coroutine
-def test_func(app, test_client):
+def test_func(app, aiohttp_client):
 
     @aiohttp_mako.template('tplt.html')
     @asyncio.coroutine
@@ -18,7 +18,7 @@ def test_func(app, test_client):
 
     app.router.add_route('GET', '/', func)
 
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
     resp = yield from client.get('/')
     assert 200 == resp.status
     txt = yield from resp.text()
@@ -26,7 +26,7 @@ def test_func(app, test_client):
 
 
 @asyncio.coroutine
-def test_meth(app, test_client):
+def test_meth(app, aiohttp_client):
 
     class Handler:
 
@@ -38,7 +38,7 @@ def test_meth(app, test_client):
     handler = Handler()
     app.router.add_route('GET', '/', handler.meth)
 
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
 
     resp = yield from client.get('/')
     txt = yield from resp.text()
@@ -47,7 +47,7 @@ def test_meth(app, test_client):
 
 
 @asyncio.coroutine
-def test_render_template(app, test_client):
+def test_render_template(app, aiohttp_client):
 
     @asyncio.coroutine
     def func(request):
@@ -56,7 +56,7 @@ def test_render_template(app, test_client):
                                              'text': 'text'})
 
     app.router.add_route('GET', '/', func)
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
     resp = yield from client.get('/')
     assert 200 == resp.status
     txt = yield from resp.text()
@@ -64,14 +64,14 @@ def test_render_template(app, test_client):
 
 
 @asyncio.coroutine
-def test_convert_func_to_coroutine(app, test_client):
+def test_convert_func_to_coroutine(app, aiohttp_client):
 
     @aiohttp_mako.template('tplt.html')
     def func(request):
         return {'head': 'HEAD', 'text': 'text'}
 
     app.router.add_route('GET', '/', func)
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
     resp = yield from client.get('/')
     assert 200 == resp.status
     txt = yield from resp.text()
@@ -79,13 +79,13 @@ def test_convert_func_to_coroutine(app, test_client):
 
 
 @asyncio.coroutine
-def test_render_not_initialized(loop):
+def test_render_not_initialized():
 
     @asyncio.coroutine
     def func(request):
         return aiohttp_mako.render_template('template', request, {})
 
-    app = web.Application(loop=loop)
+    app = web.Application()
     app.router.add_route('GET', '/', func)
 
     req = make_mocked_request('GET', '/', app=app)
@@ -99,9 +99,9 @@ def test_render_not_initialized(loop):
 
 
 @asyncio.coroutine
-def test_template_not_found(loop):
+def test_template_not_found():
 
-    app = web.Application(loop=loop)
+    app = web.Application()
     aiohttp_mako.setup(app, input_encoding='utf-8',
                        output_encoding='utf-8',
                        default_filters=['decode.utf8'])
@@ -115,14 +115,14 @@ def test_template_not_found(loop):
 
 
 @asyncio.coroutine
-def test_template_not_mapping(loop):
+def test_template_not_mapping():
 
     @aiohttp_mako.template('tmpl.html')
     @asyncio.coroutine
     def func(request):
         return 'data'
 
-    app = web.Application(loop=loop)
+    app = web.Application()
     lookup = aiohttp_mako.setup(app, input_encoding='utf-8',
                                 output_encoding='utf-8',
                                 default_filters=['decode.utf8'])
@@ -142,9 +142,9 @@ def test_template_not_mapping(loop):
 
 
 @asyncio.coroutine
-def test_get_env(loop):
+def test_get_env():
 
-    app = web.Application(loop=loop)
+    app = web.Application()
     lookup1 = aiohttp_mako.setup(app, input_encoding='utf-8',
                                  output_encoding='utf-8',
                                  default_filters=['decode.utf8'])

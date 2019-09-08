@@ -1,7 +1,7 @@
 import aiohttp_mako
 
 
-async def test_func(app, test_client):
+async def test_func(app, aiohttp_client):
 
     @aiohttp_mako.template('tplt.html')
     async def func(request):
@@ -9,7 +9,7 @@ async def test_func(app, test_client):
 
     app.router.add_route('GET', '/', func)
 
-    client = await test_client(app)
+    client = await aiohttp_client(app)
 
     resp = await client.get('/')
     assert 200 == resp.status

@@ -18,7 +18,7 @@ def create_app(loop, context_processors):
 
 
 @asyncio.coroutine
-def test_simple(loop, test_client):
+def test_simple(loop, aiohttp_client):
 
     @asyncio.coroutine
     def context_processor(request):
@@ -33,7 +33,7 @@ def test_simple(loop, test_client):
 
     app.router.add_route('GET', '/', func)
 
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
     resp = yield from client.get('/')
     assert 200 == resp.status
     txt = yield from resp.text()
@@ -41,7 +41,7 @@ def test_simple(loop, test_client):
 
 
 @asyncio.coroutine
-def test_overwrite(loop, test_client):
+def test_overwrite(loop, aiohttp_client):
 
     @asyncio.coroutine
     def context_processor1(request):
@@ -60,7 +60,7 @@ def test_overwrite(loop, test_client):
 
     app.router.add_route('GET', '/', func)
 
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
     resp = yield from client.get('/')
     assert 200 == resp.status
     txt = yield from resp.text()
@@ -68,7 +68,7 @@ def test_overwrite(loop, test_client):
 
 
 @asyncio.coroutine
-def test_overwrite_primary_context(loop, test_client):
+def test_overwrite_primary_context(loop, aiohttp_client):
 
     @asyncio.coroutine
     def context_processor(request):
@@ -83,7 +83,7 @@ def test_overwrite_primary_context(loop, test_client):
 
     app.router.add_route('GET', '/', func)
 
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
     resp = yield from client.get('/')
     assert 200 == resp.status
     txt = yield from resp.text()
@@ -91,7 +91,7 @@ def test_overwrite_primary_context(loop, test_client):
 
 
 @asyncio.coroutine
-def test_request_processor(loop, test_client):
+def test_request_processor(loop, aiohttp_client):
 
     app = web.Application(loop=loop)
     lookup = aiohttp_mako.setup(
@@ -112,7 +112,7 @@ def test_request_processor(loop, test_client):
 
     app.router.add_route('GET', '/', func)
 
-    client = yield from test_client(app)
+    client = yield from aiohttp_client(app)
     resp = yield from client.get('/')
     assert 200 == resp.status
     txt = yield from resp.text()
