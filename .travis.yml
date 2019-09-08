@@ -10,18 +10,23 @@ install:
   - pip install -r requirements-dev.txt
   - python setup.py develop
 
-script:
-  make cov
-after_success:
-  codecov
 
-deploy:
-  provider: pypi
-  user: andrew.svetlov
-  password:
-    secure: "BKxLe+OLrJIatBuWQdkpjj0JVEBXOmD0q6/gLu8SVyR1trQ9moguEFkxCzZsRVWyD1oxb09AA3PX4wmZ7xoHuRyteyuOkkgo41Vbv9S0rUEXdSISv0VxbM6hO3vctYiozp1v56VcpWJbUIdmiL1feTyQEIJ4KwH3pASP6IOTVkw="
-  distributions: "sdist bdist_wheel"
-  on:
-    tags: true
-    all_branches: true
-    python: 3.7
+jobs:
+  include:
+    - stage: test
+      script:
+        make cov
+      after_success:
+        codecov
+    - stage: deploy
+      python: 3.7
+      deploy:
+        provider: pypi
+        user: aio-libs-bot
+        password:
+          # Encrypted with `travis encrypt -r aio-libs/aiohttp-mako --api-endpoint 'https://api.travis-ci.com/'`:
+          secure: "Z1RiKRyiQTeOsf6tW9znK7Lbv4YJCGf+EzYr1F2EpTi6CpLM8/G23z+r8Q79gAsQaJhFX4/nk5xauHpS7hwlpPYzO/0wo1fhoTgqi92wtzgON8YK1C6ttuC49tytcN4lMN07rismN8l96WX9rJIOGZyrX15HjqljaHt91W56A1JMCkQsNsUKFO08sYU0Gf5YYDQzS88gwziBSyR4BxCTDOUIv2GKNUFXCr4nHTp1HR2grUVrpFwTksu2y5sGFEB27ugymksN8LjYrWcM9JLFUfj1MI19ww6wSlTzU8KvTjOPxYxKhM7Jyw1jIzwKtOXz4Mf3Q5buncgAJarkaDogztEx6UFMQ6R4vepnzdN7QyGGNU0bBMZ+oJvdIsAmeR+AMznrNYExytBAhsEFATjE+0ox8x+FydwNyypH9eWh/fEFNSaXU0TCRzkLd3nwtqq5TpUF4BkCUoxzAH/cOUFYJC9arAStaeQmTHtCgHOkPSUBh/vOMGM7LoAkdUoN1VO2jTiHydR3gMj23pA7pscnJmakiLtiYiXfLY3TPrcZ5l8cb3kX7OdpDteHJBdpIv0wbIi06VoG5/dad85W84pkf6fk1ykaLEzAOtz5JDQXM+tBfztyI9RSqJK+GmjvCnxGZKXe4hEnY52S16BkfvSliEWvUKJdROxZAbwqQNLxtBQ="
+        distributions: "sdist bdist_wheel"
+        on:
+          tags: true
+          all_branches: true
