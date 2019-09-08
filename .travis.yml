@@ -4,7 +4,7 @@ python:
   - 3.6
   - 3.7
 
-dist: bionic
+dist: xenial
 
 install:
   - pip install --upgrade setuptools
