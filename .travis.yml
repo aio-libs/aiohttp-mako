@@ -7,7 +7,7 @@ python:
 dist: xenial
 
 install:
-  - pip install --upgrade setuptools
+  - pip install --upgrade setuptools wheel twine
   - pip install codecov
   - pip install -r requirements-dev.txt
   - python setup.py develop
