@@ -4,22 +4,25 @@ python:
   - 3.6
   - 3.7
 
+dist: bionic
+
 install:
   - pip install --upgrade setuptools
   - pip install codecov
   - pip install -r requirements-dev.txt
   - python setup.py develop
 
+script:
+  make cov
 
 jobs:
   include:
     - stage: test
-      script:
-        make cov
       after_success:
         codecov
     - stage: deploy
       python: 3.7
+      script: []
       deploy:
         provider: pypi
         user: aio-libs-bot
