@@ -6,12 +6,6 @@ import aiohttp_mako
 from aiohttp import web
 
 
-def pytest_ignore_collect(path, config):
-    if 'pep492' in str(path):
-        if sys.version_info < (3, 5, 0):
-            return True
-
-
 @pytest.fixture
 def app():
     app = web.Application()

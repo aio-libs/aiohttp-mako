@@ -2,6 +2,11 @@ import codecs
 from setuptools import setup, find_packages
 import os
 import re
+import sys
+
+
+if sys.version_info < (3, 5, 3):
+    raise RuntimeError("aiohttp 3.x requires Python 3.5.3+")
 
 
 with codecs.open(os.path.join(os.path.abspath(os.path.dirname(
@@ -15,8 +20,8 @@ with codecs.open(os.path.join(os.path.abspath(os.path.dirname(
 def read(f):
     return open(os.path.join(os.path.dirname(__file__), f)).read().strip()
 
-install_requires = ['aiohttp>=0.17', 'mako>=1.0.0']
-tests_require = install_requires + ['nose']
+
+install_requires = ['aiohttp>=3.0', 'mako>=1.0.0']
 
 
 setup(name='aiohttp-mako',
@@ -29,8 +34,9 @@ setup(name='aiohttp-mako',
           'Intended Audience :: Developers',
           'Programming Language :: Python',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
           'Topic :: Internet :: WWW/HTTP',
           'Framework :: AsyncIO',
       ],
@@ -39,7 +45,6 @@ setup(name='aiohttp-mako',
       url='https://github.com/aio-libs/aiohttp-mako/',
       license='Apache 2',
       packages=find_packages(),
+      python_requires='>=3.5.3',
       install_requires=install_requires,
-      tests_require=tests_require,
-      test_suite='nose.collector',
       include_package_data=True)

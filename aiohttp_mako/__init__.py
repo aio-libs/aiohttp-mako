@@ -1,4 +1,3 @@
-import asyncio
 import functools
 import sys
 from collections.abc import Mapping
@@ -74,14 +73,9 @@ def render_template(template_name, request, context, *,
 def template(template_name, *, app_key=APP_KEY, encoding='utf-8', status=200):
 
     def wrapper(func):
-        @asyncio.coroutine
         @functools.wraps(func)
-        def wrapped(*args):
-            if asyncio.iscoroutinefunction(func):
-                coro = func
-            else:
-                coro = asyncio.coroutine(func)
-            context = yield from coro(*args)
+        async def wrapped(*args):
+            context = await func(*args)
             request = args[-1]
             response = render_template(template_name, request, context,
                                        app_key=app_key, encoding=encoding)
@@ -95,18 +89,13 @@ class MakoRenderingException(Exception):
     """Mako rendering exceptions with error """
 
 
-@asyncio.coroutine
-def context_processors_middleware(app, handler):
-    @asyncio.coroutine
-    def middleware(request):
-        request[REQUEST_CONTEXT_KEY] = {}
-        for processor in app[APP_CONTEXT_PROCESSORS_KEY]:
-            request[REQUEST_CONTEXT_KEY].update(
-                (yield from processor(request)))
-        return (yield from handler(request))
-    return middleware
+@web.middleware
+async def context_processors_middleware(request, handler):
+    request[REQUEST_CONTEXT_KEY] = {}
+    for processor in request.app[APP_CONTEXT_PROCESSORS_KEY]:
+        request[REQUEST_CONTEXT_KEY].update(await processor(request))
+    return await handler(request)
 
 
-@asyncio.coroutine
-def request_processor(request):
+async def request_processor(request):
     return {'request': request}

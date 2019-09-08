@@ -1,4 +1,3 @@
-import asyncio
 import pytest
 
 from aiohttp import web
@@ -8,81 +7,58 @@ from mako.lookup import TemplateLookup
 import aiohttp_mako
 
 
-@asyncio.coroutine
-def test_func(app, aiohttp_client):
+async def test_func(app, aiohttp_client):
 
     @aiohttp_mako.template('tplt.html')
-    @asyncio.coroutine
-    def func(request):
+    async def func(request):
         return {'head': 'HEAD', 'text': 'text'}
 
     app.router.add_route('GET', '/', func)
 
-    client = yield from aiohttp_client(app)
-    resp = yield from client.get('/')
+    client = await aiohttp_client(app)
+    resp = await client.get('/')
     assert 200 == resp.status
-    txt = yield from resp.text()
+    txt = await resp.text()
     assert '<html><body><h1>HEAD</h1>text</body></html>' == txt
 
 
-@asyncio.coroutine
-def test_meth(app, aiohttp_client):
+async def test_meth(app, aiohttp_client):
 
     class Handler:
 
         @aiohttp_mako.template('tplt.html')
-        @asyncio.coroutine
-        def meth(self, request):
+        async def meth(self, request):
             return {'head': 'HEAD', 'text': 'text'}
 
     handler = Handler()
     app.router.add_route('GET', '/', handler.meth)
 
-    client = yield from aiohttp_client(app)
+    client = await aiohttp_client(app)
 
-    resp = yield from client.get('/')
-    txt = yield from resp.text()
+    resp = await client.get('/')
+    txt = await resp.text()
     assert '<html><body><h1>HEAD</h1>text</body></html>' == txt
     assert 200 == resp.status
 
 
-@asyncio.coroutine
-def test_render_template(app, aiohttp_client):
+async def test_render_template(app, aiohttp_client):
 
-    @asyncio.coroutine
-    def func(request):
+    async def func(request):
         return aiohttp_mako.render_template('tplt.html', request,
                                             {'head': 'HEAD',
                                              'text': 'text'})
 
     app.router.add_route('GET', '/', func)
-    client = yield from aiohttp_client(app)
-    resp = yield from client.get('/')
+    client = await aiohttp_client(app)
+    resp = await client.get('/')
     assert 200 == resp.status
-    txt = yield from resp.text()
+    txt = await resp.text()
     assert '<html><body><h1>HEAD</h1>text</body></html>' == txt
 
 
-@asyncio.coroutine
-def test_convert_func_to_coroutine(app, aiohttp_client):
+async def test_render_not_initialized():
 
-    @aiohttp_mako.template('tplt.html')
-    def func(request):
-        return {'head': 'HEAD', 'text': 'text'}
-
-    app.router.add_route('GET', '/', func)
-    client = yield from aiohttp_client(app)
-    resp = yield from client.get('/')
-    assert 200 == resp.status
-    txt = yield from resp.text()
-    assert '<html><body><h1>HEAD</h1>text</body></html>' == txt
-
-
-@asyncio.coroutine
-def test_render_not_initialized():
-
-    @asyncio.coroutine
-    def func(request):
+    async def func(request):
         return aiohttp_mako.render_template('template', request, {})
 
     app = web.Application()
@@ -91,15 +67,14 @@ def test_render_not_initialized():
     req = make_mocked_request('GET', '/', app=app)
 
     with pytest.raises(web.HTTPInternalServerError) as ctx:
-        yield from func(req)
+        await func(req)
 
     assert "Template engine is not initialized, " \
         "call aiohttp_mako.setup(app_key={}) first" \
         "".format(aiohttp_mako.APP_KEY) == ctx.value.text
 
 
-@asyncio.coroutine
-def test_template_not_found():
+async def test_template_not_found():
 
     app = web.Application()
     aiohttp_mako.setup(app, input_encoding='utf-8',
@@ -114,12 +89,10 @@ def test_template_not_found():
     assert "Template 'template' not found" == ctx.value.text
 
 
-@asyncio.coroutine
-def test_template_not_mapping():
+async def test_template_not_mapping():
 
     @aiohttp_mako.template('tmpl.html')
-    @asyncio.coroutine
-    def func(request):
+    async def func(request):
         return 'data'
 
     app = web.Application()
@@ -135,14 +108,13 @@ def test_template_not_mapping():
     req = make_mocked_request('GET', '/', app=app)
 
     with pytest.raises(web.HTTPInternalServerError) as ctx:
-        yield from func(req)
+        await func(req)
 
     assert "context should be mapping, not" \
            " <class 'str'>" == ctx.value.text
 
 
-@asyncio.coroutine
-def test_get_env():
+async def test_get_env():
 
     app = web.Application()
     lookup1 = aiohttp_mako.setup(app, input_encoding='utf-8',
