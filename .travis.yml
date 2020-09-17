@@ -5,6 +5,7 @@ python:
   - 3.7
 
 dist: xenial
+arch: ppc64le
 
 install:
   - pip install --upgrade setuptools wheel twine
