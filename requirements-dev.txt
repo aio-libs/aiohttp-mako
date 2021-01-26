@@ -1,6 +1,6 @@
 ipdb==0.13.4
 coverage==5.3.1
-pytest==6.2.1
+pytest==6.2.2
 pytest-cov==2.11.1
 pep8==1.7.1
 pyflakes==2.2.0
