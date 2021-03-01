@@ -1,5 +1,5 @@
 ipdb==0.13.4
-coverage==5.4
+coverage==5.5
 pytest==6.2.2
 pytest-cov==2.11.1
 pep8==1.7.1
