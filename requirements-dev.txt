@@ -1,4 +1,4 @@
-ipdb==0.13.7
+ipdb==0.13.8
 coverage==5.5
 pytest==6.2.4
 pytest-cov==2.12.0
